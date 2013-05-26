@@ -237,9 +237,10 @@ setReplaceMethod("sizeFactors", signature(object="DESeqDataSet", value="numeric"
 #' gene-specific factors for each sample rather than a single size factor.
 #'
 #' Normalization factors alter the model of \code{\link{DESeq}} in the following way, for
-#' counts \eqn{K_{ij}}{K_ij} for gene i and sample j:
+#' counts \eqn{K_{ij}}{K_ij} and normalization factors \eqn{NF_{ij}}{NF_ij} for gene i and sample j:
 #'
-#' \deqn{K_{ij} \sim \textrm{NB}(NF_{ij} \mu_{ij}, \alpha_i)}{K_ij ~ NB(NF_ij * mu_ij, alpha_i)}
+#' \deqn{ K_{ij} \sim \textrm{NB}( \mu_{ij}, \alpha_i) }{ K_ij ~ NB(mu_ij, alpha_i) }
+#' \deqn{ \mu_{ij} = NF_{ij} q_{ij} }{ mu_ij = NF_ij * q_ij }
 #'
 #' @note Normalization factors are on the scale of the counts (similar to \code{\link{sizeFactors}})
 #' and unlike offsets, which are typically on the scale of the predictors (in this case, log counts).
@@ -383,7 +384,7 @@ setMethod("estimateSizeFactors", signature(object="DESeqDataSet"),
 #' \code{\link{estimateDispersionsMAP}}.
 #' 
 #' @usage
-#' \S4method{estimateDispersions}{DESeqDataSet}(object,fitType=c("parametric","local","mean"),maxit=100)
+#' \S4method{estimateDispersions}{DESeqDataSet}(object,fitType=c("parametric","local","mean"),maxit=100, quiet=FALSE)
 #'
 #' @docType methods
 #' @name estimateDispersions
@@ -405,6 +406,7 @@ setMethod("estimateSizeFactors", signature(object="DESeqDataSet"),
 #'   \item mean - use the mean of gene-wise dispersion estimates.
 #' }
 #' @param maxit control parameter: maximum number of iterations to allow for convergence
+#' @param quiet whether to print messages at each step
 #'
 #' @return The DESeqDataSet passed as parameters, with the dispersion information
 #' filled in as metadata columns, accessible via \code{mcols}, or the final dispersions
@@ -423,12 +425,12 @@ setMethod("estimateSizeFactors", signature(object="DESeqDataSet"),
 #' dds <- estimateDispersions(dds)
 #' head(dispersions(dds))
 #'
-estimateDispersions.DESeqDataSet <- function(object, fitType=c("parametric","local","mean"), maxit=100) {
+estimateDispersions.DESeqDataSet <- function(object, fitType=c("parametric","local","mean"), maxit=100, quiet=FALSE) {
   if (is.null(sizeFactors(object)) & is.null(normalizationFactors(object))) {
     stop("first call estimateSizeFactors or provide a normalizationFactor matrix before estimateDispersions")
   }
   if (!is.null(dispersions(object))) {
-    message("you had estimated dispersions, replacing these")
+    if (!quiet) message("you had estimated dispersions, replacing these")
     mcols(object) <- mcols(object)[,!(mcols(mcols(object))$type %in% c("intermediate","results"))]
   }
   fitType <- match.arg(fitType)
@@ -440,17 +442,17 @@ estimateDispersions.DESeqDataSet <- function(object, fitType=c("parametric","loc
   modelMatrix <- model.matrix(design(object), data=as.data.frame(colData(object)))  
   noReps <- nrow(modelMatrix) == ncol(modelMatrix)
   if (noReps) {
-    message("same number of samples and coefficients to fit, estimating dispersion by treating samples as replicates")
+    if (!quiet) message("same number of samples and coefficients to fit, estimating dispersion by treating samples as replicates")
     designIn <- design(object)
     design(object) <- formula(~ 1)
   }
   
-  message("gene-wise dispersion estimates")
-  object <- estimateDispersionsGeneEst(object, maxit=maxit)
-  message("mean-dispersion relationship")
-  object <- estimateDispersionsFit(object, fitType=fitType)
-  message("final dispersion estimates")
-  object <- estimateDispersionsMAP(object, maxit=maxit)
+  if (!quiet) message("gene-wise dispersion estimates")
+  object <- estimateDispersionsGeneEst(object, maxit=maxit, quiet=quiet)
+  if (!quiet) message("mean-dispersion relationship")
+  object <- estimateDispersionsFit(object, fitType=fitType, quiet=quiet)
+  if (!quiet) message("final dispersion estimates")
+  object <- estimateDispersionsMAP(object, maxit=maxit, quiet=quiet)
 
   # replace the previous design
   if (noReps) design(object) <- designIn
