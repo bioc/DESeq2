@@ -3,8 +3,9 @@
 \title{Wald test for the GLM coefficients}
 \usage{
   nbinomWaldTest(object, betaPrior = TRUE,
-    pAdjustMethod = "BH", priorSigmasq, cooksCutoff,
-    maxit = 100, useOptim = TRUE, quiet = FALSE)
+    pAdjustMethod = "BH", priorSigmaSq, cooksCutoff,
+    maxit = 100, useOptim = TRUE, quiet = FALSE,
+    useT = FALSE, df)
 }
 \arguments{
   \item{object}{a DESeqDataSet}
@@ -16,7 +17,7 @@
   \item{pAdjustMethod}{the method to use for adjusting
   p-values, see \code{?p.adjust}}
 
-  \item{priorSigmasq}{a vector with length equal to the
+  \item{priorSigmaSq}{a vector with length equal to the
   number of model terms including the intercept. which if
   missing is estimated from the rows which do not have any
   zeros}
@@ -38,6 +39,13 @@
   on rows which do not converge within maxit}
 
   \item{quiet}{whether to print messages at each step}
+
+  \item{useT}{whether to use a t-distribution as a null
+  distribution, for significance testing of the Wald
+  statistics. If FALSE, a standard normal null distribution
+  is used.}
+
+  \item{df}{the degrees of freedom for the t-distribution}
 }
 \value{
   a DESeqDataSet with results columns accessible with the
