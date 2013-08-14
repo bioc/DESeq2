@@ -1185,8 +1185,7 @@ fitNbinomGLMs <- function(object, modelMatrix, modelFormula, alpha_hat, lambda,
         logLike <- sum(dnbinom(k,mu=mu_row,size=1/alpha,log=TRUE))
         -1 * (logLike + prior)
       }
-      o <- optim(betaRow, objectiveFn, method="L-BFGS-B",
-                 lower=-large, upper=large)
+      o <- optim(betaRow, objectiveFn, method="Nelder-Mead")
       ridge <- diag(lambda)
       # if we converged, change betaConv to TRUE
       if (o$convergence == 0) {
