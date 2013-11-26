@@ -353,7 +353,14 @@ estimateDispersionsFit <- function(object,fitType=c("parametric","local","mean")
     if (!inherits(trial,"try-error")) {
       dispFit <- dispFunction(mcols(objectNZ)$baseMean)
     } else {
-      warning("parametric fit failed, trying local fit. use plotDispEsts() to check the quality of the local fit")
+      warning("the parametric fit of dispersion estimates over the mean of counts
+failed, which occurs when the trend is not well captured by the
+function y = a/x + b. A local regression fit is automatically performed,
+and the analysis can continue. You can specify fitType='local' or 'mean'
+to avoid this message if re-running the same data.
+When using local regression fit, the user should examine plotDispEsts(dds)
+to make sure the fitted line is not sharply curving up or down based on
+the position of individual points.")
       fitType <- "local"
     }
   }
@@ -1223,7 +1230,13 @@ parametricDispersionFit <- function( means, disps ) {
          break
       iter <- iter + 1
       if( iter > 10 ) {
-         warning( "dispersion fit did not converge" )
+         warning( "the parametric dispersion fit did not converge,
+which occurs when the dispersion estimates over the mean do not fit to the
+curve y = a/x + b. You should re-run the analysis using fitType='local'
+or 'mean' (DESeq2 > v1.2 will re-run automatically).
+When using local regression fit, the user should examine plotDispEsts(dds)
+to make sure the fitted line is not sharply curving up or down based on
+the position of individual points." )
          break }
    }
    names( coefs ) <- c( "asymptDisp", "extraPois" )

@@ -2,7 +2,7 @@ Package: DESeq2
 Type: Package
 Title: Differential gene expression analysis based
     on the negative binomial distribution
-Version: 1.2.5
+Version: 1.2.6
 Author: Michael Love (MPIMG Berlin), Simon Anders, Wolfgang Huber (EMBL
     Heidelberg)
 Maintainer: Michael Love <michaelisaiahlove@gmail.com>
@@ -26,6 +26,7 @@ Depends:
     RcppArmadillo (>= 0.3.4.4)
 Suggests:
     RUnit,
+    Biobase,
     parathyroidSE,
     pasilla (>= 0.2.10),
     vsn,
