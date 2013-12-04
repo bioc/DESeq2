@@ -1068,6 +1068,8 @@ results <- function(object, name, contrast, cooksCutoff,
     if (is.logical(cooksCutoff) & cooksCutoff) {
       cooksCutoff <- defaultCutoff
     }
+  } else {
+    cooksCutoff <- FALSE
   }
 
   # apply cutoff based on maximum Cook's distance
