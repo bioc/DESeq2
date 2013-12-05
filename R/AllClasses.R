@@ -26,19 +26,6 @@ setValidity( "DESeqDataSet", function( object ) {
   if (any(sapply(designFactors,function(v) any(table(colData(object)[[v]]) == 0)))) {
     return("factors in design formula must have samples for each level")
   }
-  threeOrMore <- sapply(designFactors,function(v) nlevels(colData(object)[[v]]) >= 3)
-  if (any(threeOrMore)) {
-      message(paste("Usage note: the following factors have 3 or more levels:",
-paste(designFactors[threeOrMore],collapse=", "),
-"For DESeq2 versions < 1.3, if you plan on extracting results for
-these factors, we recommend using betaPrior=FALSE as an argument
-when calling DESeq().
-As currently implemented in version 1.2, the log2 fold changes can
-vary if the base level is changed, when extracting results for a
-factor with 3 or more levels. A solution will be implemented in
-version 1.3 which allows for the use of a beta prior and symmetric
-log2 fold change estimates regardless of the selection of base level.",sep="\n\n"))
-  }
   modelMatrix <- model.matrix(design, data=as.data.frame(colData(object)))
   if (qr(modelMatrix)$rank < ncol(modelMatrix)) {
     return("the model matrix is not full rank, i.e. one or more variables in the design formula are linear combinations of the others")
@@ -115,6 +102,21 @@ DESeqDataSet <- function(se, design) {
     for (v in designVars[designVarsClass == "character"]) {
       colData(se)[[v]] <- factor(colData(se)[[v]])
     }
+  }
+  
+  designFactors <- designVars[designVarsClass == "factor"]
+  threeOrMore <- sapply(designFactors,function(v) nlevels(colData(se)[[v]]) >= 3)
+  if (any(threeOrMore)) {
+      message(paste("Usage note: the following factors have 3 or more levels:",
+paste(designFactors[threeOrMore],collapse=", "),
+"For DESeq2 versions < 1.3, if you plan on extracting results for
+these factors, we recommend using betaPrior=FALSE as an argument
+when calling DESeq().
+As currently implemented in version 1.2, the log2 fold changes can
+vary if the base level is changed, when extracting results for a
+factor with 3 or more levels. A solution will be implemented in
+version 1.3 which allows for the use of a beta prior and symmetric
+log2 fold change estimates regardless of the selection of base level.",sep="\n\n"))
   }
 
   # if the last variable in the design formula is a
