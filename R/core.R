@@ -1172,7 +1172,7 @@ replaceOutliersWithTrimmedMean <- function(dds,trim=.2,cooksCutoff) {
   # size factors. Then we can replace only those values which fall
   # above the cutoff on Cook's distance
   if (!is.null(normalizationFactors(dds))) {
-    nullCounts <- as.integer(matrix(rep(trimBaseMean,ncol(dds)),ncol=dds) * 
+    nullCounts <- as.integer(matrix(rep(trimBaseMean,ncol(dds)),ncol=ncol(dds)) * 
                              normalizationFactors(dds))
 
   } else {
