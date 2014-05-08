@@ -34,7 +34,7 @@ this error can arise when subsetting a DESeqDataSet, in which
 all the samples for one or more levels of a factor in the design were removed.
 if this was intentional, use droplevels() to remove these levels, e.g.:
 
-colData(dds)$condition <- droplevels(colData(dds)$condition)
+dds$condition <- droplevels(dds$condition)
 ")
   }
   TRUE
@@ -113,6 +113,15 @@ DESeqDataSet <- function(se, design, ignoreRank=FALSE) {
     warning("some variables in design formula are characters, converting to factors")
     for (v in designVars[designVarsClass == "character"]) {
       colData(se)[[v]] <- factor(colData(se)[[v]])
+    }
+  }
+
+  designFactors <- designVars[designVarsClass == "factor"]
+  missingLevels <- sapply(designFactors,function(v) any(table(colData(se)[[v]]) == 0))
+  if (any(missingLevels)) {
+    message("factor levels were dropped which had no samples")
+    for (v in designFactors[missingLevels]) {
+      colData(se)[[v]] <- droplevels(colData(se)[[v]])
     }
   }
 

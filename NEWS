@@ -1,3 +1,11 @@
+CHANGES IN VERSION 1.4.2
+------------------------
+
+    o Fixed bugs: estimating beta prior for interaction between factor 
+      and numeric; not returning row names for counts(); construction
+      of DESeqDataSet gives wrong error when there are empty levels:
+      instead now drops the levels for the user.
+
 CHANGES IN VERSION 1.4.1
 ------------------------
 
