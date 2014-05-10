@@ -251,6 +251,7 @@ arma::mat weighted_x_ridge, q, r, big_w;
 // deviance, convergence and tolerance
 double dev, dev_old, conv_test;
 double tol = Rcpp::as<double>(tolSEXP);
+double large = 30.0;
 Rcpp::NumericVector iter(y_n);
 Rcpp::NumericVector deviance(y_n);
 for (int i = 0; i < y_n; i++) {
@@ -280,6 +281,10 @@ for (int i = 0; i < y_n; i++) {
       // IRLS with Q matrix for X    
       gamma_hat = q.t() * sqrt(big_w) * big_z;
       solve(beta_hat, r, gamma_hat);
+      if (sum(abs(beta_hat) > large) > 0) {
+	iter(i) = maxit;
+	break;
+      }
       mu_hat = nfrow % exp(x * beta_hat);
       dev = 0.0;
       for (int j = 0; j < y_m; j++) {
@@ -287,6 +292,10 @@ for (int i = 0; i < y_n; i++) {
 	dev = dev + -2.0 * Rf_dnbinom_mu(yrow[j], 1.0/alpha_hat[i], mu_hat[j], 1);
       }
       conv_test = fabs(dev - dev_old)/(fabs(dev) + 0.1);
+      if (std::isnan(conv_test)) {
+	iter(i) = maxit;
+	break;
+      }
       if ((t > 0) & (conv_test < tol)) {
 	break;
       }
@@ -300,6 +309,10 @@ for (int i = 0; i < y_n; i++) {
       w = diagmat(mu_hat/(1.0 + alpha_hat[i] * mu_hat));
       z = arma::log(mu_hat / nfrow) + (yrow - mu_hat) / mu_hat;
       solve(beta_hat, x.t() * w * x + ridge, x.t() * w * z);
+      if (sum(abs(beta_hat) > large) > 0) {
+	iter(i) = maxit;
+	break;
+      }
       mu_hat = nfrow % exp(x * beta_hat);
       dev = 0.0;
       for (int j = 0; j < y_m; j++) {
@@ -307,6 +320,10 @@ for (int i = 0; i < y_n; i++) {
 	dev = dev + -2.0 * Rf_dnbinom_mu(yrow[j], 1.0/alpha_hat[i], mu_hat[j], 1);
       }
       conv_test = fabs(dev - dev_old)/(fabs(dev) + 0.1);
+      if (std::isnan(conv_test)) {
+	iter(i) = maxit;
+	break;
+      }
       if ((t > 0) & (conv_test < tol)) {
 	break;
       }
