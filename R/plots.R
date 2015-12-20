@@ -148,6 +148,7 @@ plotMA.DESeqResults <- function(object, alpha, main="", ylim, MLE=FALSE, ...) {
 #' plotMA(res)
 #'
 #' @importFrom geneplotter plotMA
+#' @importFrom ggplot2 ggplot geom_point xlab ylab coord_fixed aes_string
 #'
 #' @export
 setMethod("plotMA", signature(object="DESeqDataSet"), plotMA.DESeqDataSet)
