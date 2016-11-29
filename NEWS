@@ -1,3 +1,8 @@
+CHANGES IN VERSION 1.14.1
+-------------------------
+
+    o Removed deprecated armadillo argument in DESeq2.cpp
+
 CHANGES IN VERSION 1.13.8
 -------------------------
 
