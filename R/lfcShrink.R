@@ -47,6 +47,8 @@
 #' @param returnList logical, should \code{lfcShrink} return a list, where
 #' the first element is the results table, and the second element is the
 #' output of \code{apeglm} or \code{ashr}
+#' @param apeAdapt logical, should \code{apeglm} use the MLE estimates of
+#' LFC to adapt the prior, or use default or specified \code{prior.control}
 #' @param parallel if FALSE, no parallelization. if TRUE, parallel
 #' execution using \code{BiocParallel}, see same argument of \code{\link{DESeq}}
 #' parallelization only used with \code{normal} or \code{apeglm}
@@ -85,6 +87,7 @@
 lfcShrink <- function(dds, coef, contrast, res,
                       type=c("normal","apeglm","ashr"),
                       svalue=FALSE, returnList=FALSE,
+                      apeAdapt=TRUE,
                       parallel=FALSE, BPPARAM=bpparam(),
                       ...) {  
 
@@ -220,7 +223,11 @@ lfcShrink <- function(dds, coef, contrast, res,
     } else {
       weights <- matrix(1, nrow=nrow(dds), ncol=ncol(dds))
     }
-    mle <- log(2) * cbind(res$log2FoldChange, res$lfcSE)
+    if (apeAdapt) {
+      mle <- log(2) * cbind(res$log2FoldChange, res$lfcSE)
+    } else {
+      mle <- NULL
+    }
     if (!parallel) {
       fit <- apeglm::apeglm(Y=Y,
                             x=design,
