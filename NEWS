@@ -1,3 +1,9 @@
+CHANGES IN VERSION 1.38.1
+-------------------------
+
+    o Removing genefilter as dependency, switching to matrixStats.
+      This should resolve gfortran.
+    
 CHANGES IN VERSION 1.31.16
 --------------------------
 
