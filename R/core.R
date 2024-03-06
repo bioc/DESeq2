@@ -785,6 +785,8 @@ estimateDispersionsGeneEst <- function(object, minDisp=1e-8, kappa_0=1,
       initial_lp <- dispRes$initial_lp
       # only rerun those rows which moved
     } else if (type == "glmGamPoi") {
+
+      ## begin fixed code from I-Hsuan Lin
       if (!requireNamespace("glmGamPoi", quietly=TRUE)) {
         stop("type='glmGamPoi' requires installing the Bioconductor package 'glmGamPoi'")
       }
@@ -792,17 +794,27 @@ estimateDispersionsGeneEst <- function(object, minDisp=1e-8, kappa_0=1,
     Ahlmann-Eltze, C., Huber, W. (2020) glmGamPoi: Fitting Gamma-Poisson
     Generalized Linear Models on Single Cell Count Data. Bioinformatics.
     https://doi.org/10.1093/bioinformatics/btaa1009")
-      Counts <- counts(objectNZ)
-      initial_lp <- vapply(which(fitidx), function(idx){
-        sum(dnbinom(Counts[idx, ], mu = fitMu, size = 1 / alpha_hat[idx], log = TRUE))
+      Counts <- counts(objectNZ)[fitidx,,drop=FALSE]
+      initial_lp <- vapply(seq_len(nrow(fitMu)), function(idx) {
+        sum(dnbinom(x = Counts[idx,],
+                    mu = fitMu[idx,],
+                    size = 1 / alpha_hat[fitidx][idx],
+                    log = TRUE))
       }, FUN.VALUE = 0.0)
-      dispersion_fits <- glmGamPoi::overdispersion_mle(Counts[fitidx, ], mean = fitMu,
-                                                       model_matrix = modelMatrix, verbose = ! quiet)
+      dispersion_fits <- glmGamPoi::overdispersion_mle(
+                                      Counts, mean = fitMu,
+                                      model_matrix = modelMatrix, verbose = ! quiet
+                                    )
       dispIter[fitidx] <- dispersion_fits$iterations
       alpha_hat_new[fitidx] <- pmin(dispersion_fits$estimate, maxDisp)
-      last_lp <- vapply(which(fitidx), function(idx){
-        sum(dnbinom(Counts[idx, ], mu = fitMu, size = 1 / alpha_hat_new[idx], log = TRUE))
+      last_lp <- vapply(seq_len(nrow(fitMu)), function(idx) {
+        sum(dnbinom(x = Counts[idx,],
+                    mu = fitMu[idx,],
+                    size = 1 / alpha_hat_new[fitidx][idx],
+                    log = TRUE))
       }, FUN.VALUE = 0.0)
+      ## end fixed code from I-Hsuan Lin
+      
     }
     fitidx <- abs(log(alpha_hat_new) - log(alpha_hat)) > .05
     fitidx[is.na(fitidx)] <- FALSE
