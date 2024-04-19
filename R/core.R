@@ -1846,6 +1846,7 @@ nbinomLRT <- function(object, full=design(object), reduced,
   objectNZ <- object[!mcols(object)$allZero,,drop=FALSE]
 
   if (type == "DESeq2") {
+    
     if (modelAsFormula) {
       fullModel <- fitNbinomGLMs(objectNZ, modelFormula=full,
                                  renameCols=renameCols,
@@ -1878,8 +1879,11 @@ nbinomLRT <- function(object, full=design(object), reduced,
     LRTPvalue <- pchisq(LRTStatistic, df=df, lower.tail=FALSE)
     
     deviance <- -2 * fullModel$logLike
+
+    # update 'mu' in objectNZ for the Cook's distance calculation directly below
+    assays(objectNZ, withDimnames=FALSE)[["mu"]] <- fullModel$mu
     
-    ### Handle Hat matrix and Cook distances
+    # handle hat matrix and Cook's distances
     H <- fullModel$hat_diagonals
     
     # calculate Cook's distance
@@ -1895,6 +1899,8 @@ nbinomLRT <- function(object, full=design(object), reduced,
     
     # store Cook's distance for each sample
     assays(object, withDimnames=FALSE)[["cooks"]] <- buildMatrixWithNARows(cooks, mcols(object)$allZero)
+
+    ### begin glmGamPoi code ###
   } else if (type == "glmGamPoi") {
 
     disp_trend <- mcols(objectNZ)$dispFit
@@ -1937,14 +1943,18 @@ nbinomLRT <- function(object, full=design(object), reduced,
     }
     
     fullModel <- list(betaMatrix = fit_full$Beta / log(2), # Make sure Beta are on log2-scale
-                      betaSE = array(NA, dim(fit_full$Beta), dimnames = list(rownames(fit_full$Beta), paste0("SE_",colnames(fit_full$Beta)))),
-                      mu = fit_full$Mu, betaConv = rep(TRUE, nrow(objectNZ)), betaIter = rep(NA, nrow(objectNZ)))
+                      betaSE = array(NA, dim(fit_full$Beta),
+                                     dimnames = list(rownames(fit_full$Beta),
+                                                     paste0("SE_",colnames(fit_full$Beta)))),
+                      mu = fit_full$Mu, betaConv = rep(TRUE, nrow(objectNZ)),
+                      betaIter = rep(NA, nrow(objectNZ)))
     reducedModel <- list(betaConv = rep(TRUE, nrow(objectNZ)))
     deviance <- fit_full$deviances
     maxCooks <- rep(NA, nrow(objectNZ))
     dispModelMatrix <- modelMatrix
     attr(object,"dispModelMatrix") <- dispModelMatrix
   }
+  ### end glmGamPoi code ###
   
   betaPriorVar <- rep(1e6, ncol(modelMatrix))
     
@@ -1959,12 +1969,9 @@ nbinomLRT <- function(object, full=design(object), reduced,
   assays(objectNZ, withDimnames=FALSE)[["mu"]] <- fullModel$mu
   assays(object, withDimnames=FALSE)[["mu"]] <- buildMatrixWithNARows(fullModel$mu, mcols(object)$allZero)
 
-  
   if (any(!fullModel$betaConv)) {
     if (!quiet) message(paste(sum(!fullModel$betaConv),"rows did not converge in beta, labelled in mcols(object)$fullBetaConv. Use larger maxit argument with nbinomLRT"))
   }
-
- 
   
   # no need to store additional betas (no beta prior)
   mleBetas <- NULL

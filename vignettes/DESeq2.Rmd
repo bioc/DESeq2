@@ -173,7 +173,8 @@ Zhang Cheng,
 Frederik Ziebell,
 Luca Menestrina,
 Hendrik Weisse,
-I-Hsuan Lin.
+I-Hsuan Lin,
+Rasmus Henningsson.
 
 ## Funding
 
