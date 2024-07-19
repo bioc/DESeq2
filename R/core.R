@@ -348,6 +348,12 @@ DESeq <- function(object, test=c("Wald","LRT"),
     warning("glmGamPoi dispersion estimator should be used in combination with a LRT and not a Wald test.",
             call. = FALSE)
   }
+
+  # integer check
+  if (fitType != "glmGamPoi") {
+    if ( !is.integer( counts(object) ) )
+      stop( "the count data is not in integer mode and fitType is not 'glmGamPoi'" )
+  }
   
   if (modelAsFormula) {
     # run some tests common to DESeq, nbinomWaldTest, nbinomLRT
@@ -1340,6 +1346,10 @@ nbinomWaldTest <- function(object,
   stopifnot(length(maxit)==1)
   # in case the class of the mcols(mcols(object)) are not character
   object <- sanitizeRowRanges(object)
+
+  if ( !is.integer( counts(object) ) )
+    stop( "the count data is not in integer mode and fitType is not 'glmGamPoi'" )
+  }
   
   if ("results" %in% mcols(mcols(object))$type) {
     if (!quiet) message("found results columns, replacing these")
@@ -1796,6 +1806,12 @@ nbinomLRT <- function(object, full=design(object), reduced,
   }
   if (missing(reduced)) {
     stop("provide a reduced formula for the LRT, e.g. nbinomLRT(object, reduced= ~1)")
+  }
+
+  # integer check
+  if (type != "glmGamPoi") {
+    if ( !is.integer( counts(object) ) )
+      stop("the count data is not in integer mode and type is not 'glmGamPoi'")
   }
 
   # in case the class of the mcols(mcols(object)) are not character

@@ -1,3 +1,15 @@
+CHANGES IN VERSION 1.45.1
+-------------------------
+
+    o Dropping the requirement for DESeqDataSet to contain integers.
+      This allows fitType="glmGamPoi" to be used. If non-integer
+      counts are present and other fitType values are provided,
+      the various functions will give an error, e.g. DESeq,
+      estimateDispersions, nbinomWald, and nbinomLRT. To avoid
+      integer conversion, use DESeqDataSet() with
+      skipIntegerMode=TRUE. For more detail see:
+      https://github.com/thelovelab/DESeq2/issues/66
+
 CHANGES IN VERSION 1.44.0
 -------------------------
 

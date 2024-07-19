@@ -13,8 +13,6 @@ setValidity("DESeqDataSet", function(object) {
     return( "the count data is not numeric" )
   if ( any( is.na( counts(object) ) ) )
     return( "NA values are not allowed in the count matrix" )
-  if ( !is.integer( counts(object) ) )
-    return( "the count data is not in integer mode" )
   if ( any( counts(object) < 0 ) )
     return( "the count data contains negative values" )
 
@@ -109,6 +107,7 @@ setValidity("DESeqDataSet", function(object) {
 #' @param ignoreRank use of this argument is reserved for DEXSeq developers only.
 #' Users will immediately encounter an error upon trying to estimate dispersion
 #' using a design with a model matrix which is not full rank.
+#' @param skipIntegerMode do not convert counts to integer mode (glmGamPoi allows non-integer counts)
 #' @param ... arguments provided to \code{SummarizedExperiment} including rowRanges and metadata. Note that
 #' for Bioconductor 3.1, rowRanges must be a GRanges or GRangesList, with potential metadata columns
 #' as a DataFrame accessed and stored with \code{mcols}. If a user wants to store metadata columns
@@ -132,7 +131,7 @@ setValidity("DESeqDataSet", function(object) {
 #' @rdname DESeqDataSet
 #' @importFrom utils packageVersion
 #' @export
-DESeqDataSet <- function(se, design, ignoreRank=FALSE) {
+DESeqDataSet <- function(se, design, ignoreRank=FALSE, skipIntegerMode=FALSE) {
   if (!is(se, "RangedSummarizedExperiment")) {
     if (is(se, "SummarizedExperiment")) {
       se <- as(se, "RangedSummarizedExperiment")
@@ -160,7 +159,7 @@ DESeqDataSet <- function(se, design, ignoreRank=FALSE) {
   if (any(assay(se) < 0)) {
     stop("some values in assay are negative")
   }
-  if (!is.integer(assay(se))) {
+  if (!skipIntegerMode & !is.integer(assay(se))) {
     if (!is.numeric(assay(se))) {
       stop(paste("counts matrix should be numeric, currently it has mode:", mode(assay(se))))
     }
