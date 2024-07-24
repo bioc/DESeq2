@@ -13,7 +13,7 @@ dispersionFunction(object, ...) <- value
 
 \S4method{dispersionFunction}{DESeqDataSet}(object)
 
-\S4method{dispersionFunction}{DESeqDataSet,`function`}(object) <- value
+\S4method{dispersionFunction}{DESeqDataSet,function}(object) <- value
 }
 \arguments{
 \item{object}{a \code{DESeqDataSet} object.}

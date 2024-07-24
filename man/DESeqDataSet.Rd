@@ -9,7 +9,7 @@
 \alias{DESeqDataSetFromTximport}
 \title{DESeqDataSet object and constructors}
 \usage{
-DESeqDataSet(se, design, ignoreRank = FALSE)
+DESeqDataSet(se, design, ignoreRank = FALSE, skipIntegerMode = FALSE)
 
 DESeqDataSetFromMatrix(
   countData,
@@ -52,6 +52,8 @@ to switch to another design for differential testing.}
 \item{ignoreRank}{use of this argument is reserved for DEXSeq developers only.
 Users will immediately encounter an error upon trying to estimate dispersion
 using a design with a model matrix which is not full rank.}
+
+\item{skipIntegerMode}{do not convert counts to integer mode (glmGamPoi allows non-integer counts)}
 
 \item{countData}{for matrix input: a matrix of non-negative integers}
 
