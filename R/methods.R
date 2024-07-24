@@ -522,6 +522,9 @@ this column could have come in during colData import and should be removed.")
     }
   }
 
+  # match argument for fitType
+  fitType <- match.arg(fitType, choices=c("parametric","local","mean", "glmGamPoi"))
+  
   # integer check
   if (fitType != "glmGamPoi") {
     if ( !is.integer( counts(object) ) ) {
@@ -537,7 +540,6 @@ this column could have come in during colData import and should be removed.")
     mcols(object) <- mcols(object)[,!(mcols(mcols(object))$type %in% c("intermediate","results")),drop=FALSE]
   }
   stopifnot(length(maxit)==1)
-  fitType <- match.arg(fitType, choices=c("parametric","local","mean", "glmGamPoi"))
   dispersionEstimator <- if (fitType == "glmGamPoi") {
     if (!requireNamespace("glmGamPoi", quietly=TRUE)) {
       stop("type='glmGamPoi' requires installing the Bioconductor package 'glmGamPoi'")
