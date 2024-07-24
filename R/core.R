@@ -351,8 +351,9 @@ DESeq <- function(object, test=c("Wald","LRT"),
 
   # integer check
   if (fitType != "glmGamPoi") {
-    if ( !is.integer( counts(object) ) )
-      stop( "the count data is not in integer mode and fitType is not 'glmGamPoi'" )
+    if ( !is.integer( counts(object) ) ) {
+      stop("the count data is not in integer mode and fitType is not 'glmGamPoi'")
+    }
   }
   
   if (modelAsFormula) {
@@ -1347,7 +1348,8 @@ nbinomWaldTest <- function(object,
   # in case the class of the mcols(mcols(object)) are not character
   object <- sanitizeRowRanges(object)
 
-  if ( !is.integer( counts(object) ) )
+  # integer check
+  if ( !is.integer( counts(object) ) ) {
     stop( "the count data is not in integer mode and fitType is not 'glmGamPoi'" )
   }
   
@@ -1810,8 +1812,9 @@ nbinomLRT <- function(object, full=design(object), reduced,
 
   # integer check
   if (type != "glmGamPoi") {
-    if ( !is.integer( counts(object) ) )
+    if ( !is.integer( counts(object) ) ) {
       stop("the count data is not in integer mode and type is not 'glmGamPoi'")
+    }
   }
 
   # in case the class of the mcols(mcols(object)) are not character

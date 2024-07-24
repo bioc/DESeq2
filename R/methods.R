@@ -524,8 +524,9 @@ this column could have come in during colData import and should be removed.")
 
   # integer check
   if (fitType != "glmGamPoi") {
-    if ( !is.integer( counts(object) ) )
+    if ( !is.integer( counts(object) ) ) {
       stop("the count data is not in integer mode and fitType is not 'glmGamPoi'")
+    }
   }
 
   if (all(MatrixGenerics::rowSums(counts(object) == counts(object)[,1]) == ncol(object))) {
