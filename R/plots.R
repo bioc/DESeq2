@@ -257,10 +257,9 @@ plotPCA.DESeqTransform = function(object, intgroup="condition",
     stop("the argument 'intgroup' should specify columns of colData(dds)")
   }
 
-  intgroup.df <- as.data.frame(colData(object)[, intgroup, drop=FALSE])
-  
   # add the intgroup factors together to create a new grouping factor
   group <- if (length(intgroup) > 1) {
+    intgroup.df <- as.data.frame(colData(object)[, intgroup, drop=FALSE])
     factor(apply( intgroup.df, 1, paste, collapse=":"))
   } else {
     colData(object)[[intgroup]]
@@ -270,7 +269,7 @@ plotPCA.DESeqTransform = function(object, intgroup="condition",
   pcs <- paste0("PC", pcsToUse)
   d <- data.frame(V1=pca$x[,pcsToUse[1]],
                   V2=pca$x[,pcsToUse[2]],
-                  group=group, intgroup.df, name=colnames(object))
+                  group=group, name=colnames(object), colData(object))
   colnames(d)[1:2] <- pcs
   
   if (returnData) {
