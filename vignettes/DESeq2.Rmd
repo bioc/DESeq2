@@ -174,7 +174,8 @@ Frederik Ziebell,
 Luca Menestrina,
 Hendrik Weisse,
 I-Hsuan Lin,
-Rasmus Henningsson.
+Rasmus Henningsson,
+Alexey Sergushichev.
 
 ## Funding
 
