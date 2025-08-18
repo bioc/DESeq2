@@ -1,3 +1,9 @@
+CHANGES IN VERSION 1.48.2
+-------------------------
+
+   o The wrong weights matrix was being used when recomputing the
+     SE within results() for the numeric-style contrast. Fixed.
+
 CHANGES IN VERSION 1.47.4
 -------------------------
 
