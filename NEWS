@@ -1,3 +1,17 @@
+CHANGES IN VERSION 1.54.0
+-------------------------
+
+  o Fix scale of the fallback starting values for optim in
+    fitNbinomGLMsOptim(), see 1.53.3 below (GitHub issue #134).
+  o Documentation in ?lfcShrink that type="apeglm" and
+    type="normal" fit on the original counts, not the
+    outlier-replaced counts, with instructions for using the
+    replaced counts if desired.
+  o New vignette FAQ on random effects: DESeq2 fits fixed effects
+    only; pointers to limma-voom with duplicateCorrelation and
+    variancePartition's dream for mixed models.
+  o Added CONTRIBUTING.md.
+
 CHANGES IN VERSION 1.53.3
 -------------------------
 
